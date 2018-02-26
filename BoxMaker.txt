@@ -1,0 +1,76 @@
+; creates box made of dimensions and letters you give it as the border
+
+%include "/usr/local/share/csc314/asm_io.inc"
+
+
+segment .data
+
+
+segment .bss
+
+
+segment .text
+        global  asm_main
+
+asm_main:
+        push    ebp
+        mov             ebp, esp
+        ; ********** CODE STARTS HERE **********
+
+        call read_int
+        mov ebx, eax
+
+        call read_char
+        call read_char
+        mov cl, al
+
+        mov esi, 0
+
+        loop1_start:
+        cmp esi, ebx
+        jge     loop1_end
+
+        mov edi, 0
+                loop2_start:
+                cmp edi, ebx
+                jge loop2_end
+
+                        ; if (i == 0 || i == a-1) {
+                        cmp esi, 0
+                        je else
+                        mov edx, ebx
+                        sub edx, 1
+                        cmp esi, edx
+                        je else
+                        cmp edi, 0
+                        je else
+                        mov edx, ebx
+                        sub edx, 1
+                        cmp edx, ebx
+                        je  else
+
+                                mov al, 0x20
+                                call print_char
+
+                        jmp if_end
+
+                        else:
+
+                                mov al, cl
+                                call print_char
+                        if_end:
+                inc edi
+                jmp loop2_start
+                loop2_end:
+
+                call print_nl
+
+        inc esi
+        jmp loop1_start
+        loop1_end:
+
+        ; *********** CODE ENDS HERE ***********
+        mov             eax, 0
+        mov             esp, ebp
+        pop             ebp
+        ret

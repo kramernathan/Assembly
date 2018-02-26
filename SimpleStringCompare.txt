@@ -1,0 +1,83 @@
+; compares two strings in program and prints if or if not they were the same
+
+%include "/usr/local/share/csc314/asm_io.inc"
+
+
+segment .data
+
+        str1    db      "test",0
+        str2    db      "test",0
+
+        same_str        db      "They were the same",10,0
+        not_same_str    db "They were NOT the same",10,0
+segment .bss
+
+
+segment .text
+        global  asm_main
+        extern  printf
+
+asm_main:
+        push    ebp
+        mov             ebp, esp
+        ; ********** CODE STARTS HERE **********
+
+        push    str2
+        push    str1
+        call    strcmp
+        add             esp, 8
+
+        cmp             eax, 1
+        je              they_were_the_same
+                push    not_same_str
+                call    printf
+                add     esp, 4
+                jmp             end
+        they_were_the_same:
+        push    same_str
+        call    printf
+        add     esp, 4
+        end:
+
+
+        ; *********** CODE ENDS HERE ***********
+        mov             eax, 0
+        mov             esp, ebp
+        pop             ebp
+        ret
+
+strcmp:
+        push    ebp
+        mov             ebp, esp
+
+        sub             esp, 4
+
+        mov             eax, DWORD [ebp + 8]    ;str1
+        mov             ebx, DWORD [ebp + 12]   ;str2
+
+        mov             DWORD [ebp - 4], 1              ; assume they are the same
+
+        check_loop:
+        cmp             BYTE [eax], 0
+        je              end_check_loop
+        cmp     BYTE [ebx], 0
+        je              end_check_loop
+
+                mov             cl, BYTE [eax]
+                cmp             cl, BYTE [ebx]
+                je              werent_the_same
+                        mov             DWORD[ebp - 4], 0
+
+                werent_the_same:
+
+        inc     eax
+        inc             ebx
+        jmp     check_loop
+
+
+        end_check_loop:
+
+        mov             eax, DWORD [ebp -4]
+        mov             esp, ebp
+        pop             ebp
+        ret

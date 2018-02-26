@@ -1,0 +1,60 @@
+; determines length of a given string and prints that length
+
+%include "/usr/local/share/csc314/asm_io.inc"
+
+
+segment .data
+
+        mystr   db      "Test123",0
+        format  db      "The length was: %d",10,0
+
+segment .bss
+
+
+segment .text
+        global  asm_main
+        extern  printf
+
+asm_main:
+        push    ebp
+        mov             ebp, esp
+        ; ********** CODE STARTS HERE **********
+
+        push    mystr
+        call    strlen
+        add             esp, 4
+
+        push    eax
+        push    format
+        call    printf
+        add             esp, 8
+
+        ; *********** CODE ENDS HERE ***********
+        mov             eax, 0
+        mov             esp, ebp
+        pop             ebp
+        ret
+
+
+strlen:
+        push    ebp
+        mov             ebp, esp
+
+        mov             ecx, DWORD [ebp + 8]
+
+        mov             ebx, 0
+        check_loop:
+
+                mov             al, BYTE [ecx + ebx]
+                cmp     al, 0
+                je              check_loop_end
+
+        inc     ebx
+        jmp             check_loop
+
+        check_loop_end:
+
+        mov             eax, ebx
+        mov     esp, ebp
+        pop     ebp
+        ret

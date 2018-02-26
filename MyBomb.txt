@@ -1,0 +1,151 @@
+; Bomb I built
+
+%include "/usr/local/share/csc314/asm_io.inc"
+
+
+segment .data
+
+        crypt           db  0x8c,0xc9,0xc9,0xde,0x80,0x8f,0xdc,0x94,0xd7,0xc4,0x00
+        fmt             db  "%10s",0
+    boomstr     db  "BOOM!",0
+        bufferstr       db      " ",13,10,0
+    defusestr1  db  "Trial 1/2 successfully completed! Begin trial 2:",13,10,0
+        defusestr2  db  "Trial 2/2 successfully completed! The bomb has been defused!",0
+
+segment .bss
+
+        input   resb    11
+        code    resd    1
+
+segment .text
+        global  asm_main
+        extern  scanf
+        extern  puts
+        extern  getchar
+
+asm_main:
+        push    ebp
+        mov             ebp, esp
+        ; ********** CODE STARTS HERE **********
+
+        mov             DWORD [code], 0
+
+    push    input
+    push    fmt
+    call    scanf
+    add     esp, 8
+
+    mov     eax, input
+    loop1:
+    cmp     BYTE [eax], 0
+    je      loop1end
+        xor     BYTE [eax], 0xed
+    inc     eax
+    jmp     loop1
+    loop1end:
+
+    call    print_int
+
+    cld
+    mov     esi, input
+    mov     edi, crypt
+    mov     ecx, 10
+    repe    cmpsb
+
+    jne     boom1
+        push    bufferstr
+                call    puts
+                push    defusestr1
+        call    puts
+        add     esp, 8
+        jmp     readloop
+    boom1:
+        push    boomstr
+        call    puts
+        add     esp, 4
+
+    ; Start bomb 2
+
+    readloop:
+    call    getchar
+    cmp     eax, 'S'
+    jne     next1
+    call    do_S
+    jmp     over
+    next1:
+    cmp     eax, 'U'
+    jne     next2
+    call    do_U
+    jmp     over
+    next2:
+    cmp     eax, 'C'
+    jne     next3
+    call    do_C
+    jmp     over
+    next3:
+    cmp     eax, 'E'
+    jne     next4
+    call    do_E
+    jmp     over
+    next4:
+    cmp     eax, 'X'
+    je      readloopend
+    over:
+    jmp     readloop
+    readloopend:
+
+    cmp     DWORD [code], 1624
+    jne     boom2
+        push    defusestr2
+        call    puts
+        add     esp, 4
+        jmp     end
+    boom2:
+        push    boomstr
+        call    puts
+        add     esp, 4
+    end:
+
+        ; *********** CODE ENDS HERE ***********
+        mov             eax, 0
+        mov             esp, ebp
+        pop             ebp
+        ret
+
+
+
+do_S:
+    push ebp
+    mov ebp, esp
+    add DWORD [code], 500
+    mov eax, 0
+    mov esp, ebp
+    pop ebp
+    ret
+
+do_U:
+    push ebp
+    mov ebp, esp
+    dec DWORD [code]
+    mov eax, 0
+    mov esp, ebp
+    pop ebp
+    ret
+
+do_C:
+    push ebp
+    mov ebp, esp
+    add DWORD [code], 50
+    mov eax, 0
+    mov esp, ebp
+    pop ebp
+    ret
+
+do_E:
+    push ebp
+    mov ebp, esp
+    add DWORD [code], 25
+    mov eax, 0
+    mov esp, ebp
+    pop ebp
+    ret

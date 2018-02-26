@@ -1,0 +1,66 @@
+; bomb1
+
+%include "/usr/local/share/csc314/asm_io.inc"
+
+
+segment .data
+
+        crypt   db      0x9f,0xb9,0xbc,0xff,0xbe,0x9f,0xff,0xaf,0xbe,0xff,0xb8,0x9c,0x8c,0xbf,0xbf,0xbb,0xfc,0xbe,0xa8,0x00
+        ;Sup3rS3cr3tP@ssw0rd
+        fmt             db      "%19s",0
+        boomstr         db      "BOOM!",0
+        defusestr       db      "Bomb defused!",0
+
+segment .bss
+
+        input   resb    20
+
+segment .text
+        global  asm_main
+        extern  scanf
+        extern  puts
+
+asm_main:
+        push    ebp
+        mov             ebp, esp
+        ; ********** CODE STARTS HERE **********
+
+        push    input
+        push    fmt
+        call    scanf
+        add             esp, 8
+
+        mov             eax, input
+        loop1:
+        cmp             BYTE [eax], 0
+        je              loop1end
+                xor             BYTE [eax], 0xcc
+        inc             eax
+        jmp             loop1
+        loop1end:
+
+        call    print_int
+
+        cld
+        mov             esi, input
+        mov             edi, crypt
+        mov             ecx, 19
+        repe    cmpsb
+
+        jne             boom
+                push    defusestr
+                call    puts
+                add             esp, 4
+                jmp     end
+        boom:
+                push    boomstr
+                call    puts
+                add     esp, 4
+
+        end:
+
+        ; *********** CODE ENDS HERE ***********
+        mov             eax, 0
+        mov             esp, ebp
+        pop             ebp
+        ret

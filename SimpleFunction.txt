@@ -1,0 +1,48 @@
+; Simple program to show how a function works in assembly
+
+%include "/usr/local/share/csc314/asm_io.inc"
+
+        %define varA 5
+        %define varB 10
+        %define varC 20
+
+segment .data
+
+
+segment .bss
+
+
+segment .text
+        global  asm_main
+
+asm_main:
+        push    ebp
+        mov             ebp, esp
+        ; ********** CODE STARTS HERE **********
+
+        ; int do_thing(int a, int b,int c,) { return a*b - c; }
+
+        push    varC
+        push    varB
+        push    varA
+        call    do_thing
+        add             esp, 12
+
+        call    print_int
+        call    print_nl
+
+        ; *********** CODE ENDS HERE ***********
+        mov             eax, 0
+        mov             esp, ebp
+        pop             ebp
+        ret
+
+; a * b - c
+do_thing:
+        mov     eax, DWORD [esp + 4]    ; varA on the stack
+        mov             ebx, DWORD [esp + 8]    ; varB on the stack
+        mul             ebx                                             ; a * b
+        mov     ecx, DWORD [esp + 12]   ; varC on the stack
+        sub     eax, ecx                                ; a * b - c)
+
+        ret

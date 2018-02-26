@@ -1,0 +1,83 @@
+; you fill the array and it prints out min and max values after 10 entries
+
+%include "/usr/local/share/csc314/asm_io.inc"
+
+
+segment .data
+
+
+segment .bss
+
+        max     resd    1
+        min             resd    1
+        count   resd    1       ; initializes our counter (count) to 1
+        arr             resd    10  ; create an array of 10 dwords uninitialized
+
+segment .text
+        global  asm_main
+
+asm_main:
+        push    ebp
+        mov             ebp, esp
+        ; ********** CODE STARTS HERE **********
+
+        mov     DWORD [count], 0                ; i = 0
+
+        top_of_loop:
+                call    read_int                        ; eax
+                mov     ebx, DWORD [count]      ; moves count to ebx so we can add in next instruction
+                mov     DWORD [arr + ebx * 4], eax
+
+                add             DWORD [count], 1        ; i++
+
+                cmp     ebx, 9                          ; while ( i<9 )
+                jl              top_of_loop
+
+        mov ecx, DWORD [arr + 0 * 4]
+        mov DWORD [max], ecx            ; max = arr[0]
+        mov DWORD [min], ecx            ; max = arr[0]
+
+        mov DWORD [count], 0
+
+
+        top_of_loop2:
+                ; if  (arr[i] > max) max = arr[i];
+                mov ebx, DWORD [count]
+                mov ecx, DWORD [max]
+                cmp DWORD[arr + ebx * 4], ecx
+                jl endif1
+                        mov edx, DWORD [arr + ebx * 4]
+                        mov     DWORD [max], edx
+
+
+                endif1:
+                ; if (arr[i] < min) min = arr[i]
+                mov ebx, DWORD [count]
+                mov ecx, DWORD [min]
+                cmp DWORD [arr + ebx * 4], ecx
+                jg endif2
+                        mov edx, DWORD [arr + ebx *4]
+                        mov DWORD [min], edx
+
+
+                endif2:
+                add DWORD [count], 1
+
+                cmp ebx, 9
+                jl top_of_loop2
+
+        mov eax, DWORD [max]
+        call print_int
+        call print_nl
+
+
+        mov eax, DWORD [min]
+        call print_int
+        call print_nl
+
+
+        ; *********** CODE ENDS HERE ***********
+        mov             eax, 0
+        mov             esp, ebp
+        pop             ebp
+        ret

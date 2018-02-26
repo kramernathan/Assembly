@@ -1,0 +1,45 @@
+; prints all registers with their values after doing some math in them
+
+%include "/usr/local/share/csc314/asm_io.inc"
+
+
+segment .data
+
+
+segment .bss
+
+
+segment .text
+        global  asm_main
+
+asm_main:
+        push    ebp
+        mov             ebp, esp
+        ; ********** CODE STARTS HERE **********
+
+        mov eax, 5
+        add eax, 5
+        add eax, 5
+        add eax, 5
+
+        mov     ebx, eax
+        sub ebx, 19
+        add ebx, 6
+
+        mov ecx, 7
+        sub ecx, eax
+        add ecx, 10
+
+        mov edx, eax
+        add edx, ebx
+        add edx, ecx
+
+
+
+        dump_regs 1
+
+        ; *********** CODE ENDS HERE ***********
+        mov             eax, 0
+        mov             esp, ebp
+        pop             ebp
+        ret

@@ -1,0 +1,108 @@
+; bomb sol is AAABBBCCCDDD etc
+
+%include "/usr/local/share/csc314/asm_io.inc"
+
+
+segment .data
+
+        boomstr         db              "BOOM!",0
+        defusestr       db              "Bomb defused!",0
+
+segment .bss
+
+        code            resd    1
+
+segment .text
+        global  asm_main
+        extern  getchar
+        extern  puts
+
+asm_main:
+        push    ebp
+        mov             ebp, esp
+        ; ********** CODE STARTS HERE **********
+
+        mov     DWORD [code], 0
+
+        readloop:
+        call    getchar
+        cmp             eax, 'A'
+        jne             next1
+        call    do_A
+        jmp             over
+        next1:
+        cmp             eax, 'B'
+        jne             next2
+        call    do_B
+        jmp             over
+        next2:
+        cmp             eax, 'C'
+        jne             next3
+        call    do_C
+        jmp             over
+        next3:
+        cmp             eax, 'D'
+        jne             next4
+        call    do_D
+        jmp             over
+        next4:
+        cmp             eax, 'X'
+        je              readloopend
+        over:
+        jmp             readloop
+        readloopend:
+
+        cmp     DWORD [code], 1337
+        jne             boom
+                push    defusestr
+                call    puts
+                add     esp, 4
+                jmp             end
+        boom:
+                push    boomstr
+                call    puts
+                add             esp, 4
+        end:
+
+        ; *********** CODE ENDS HERE ***********
+        mov             eax, 0
+        mov             esp, ebp
+        pop             ebp
+        ret
+
+
+do_A:
+        push ebp
+        mov ebp, esp
+        add DWORD [code], 1
+        mov eax, 0
+        mov esp, ebp
+        pop ebp
+        ret
+
+do_B:
+        push ebp
+        mov ebp, esp
+        dec DWORD [code]
+        mov eax, 0
+        mov esp, ebp
+        pop ebp
+        ret
+
+do_C:
+        push ebp
+        mov ebp, esp
+        add DWORD [code], 13
+        mov eax, 0
+        mov esp, ebp
+        pop ebp
+        ret
+
+do_D:
+        push ebp
+        mov ebp, esp
+        add DWORD [code], 100
+        mov eax, 0
+        mov esp, ebp
+        pop ebp
+        ret

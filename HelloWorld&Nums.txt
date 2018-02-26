@@ -1,0 +1,47 @@
+; prints 'hello' and prints 1-10 via loop
+
+%include "/usr/local/share/csc314/asm_io.inc"
+
+
+segment .data
+
+        myArray dd      1,2,3,4,5,6,7,8,9,10
+
+        myStr db 'h','e','l','l','o',10, 0  ; 10 is the newline ascii character
+        myStr2 db "hello",10,0                          ; 0 is the null terminator
+
+segment .bss
+
+
+segment .text
+        global  asm_main
+
+asm_main:
+        push    ebp
+        mov             ebp, esp
+        ; ********** CODE STARTS HERE **********
+
+        mov eax, myStr
+        call print_string
+
+        mov ecx, 0
+
+        loop_top:
+        cmp ecx, 10
+        jge     loop_end
+
+                mov eax, DWORD [myArray + ecx * 4]
+                call print_int
+                call print_nl
+
+        inc ecx
+        jmp loop_top
+
+        loop_end:
+
+
+        ; *********** CODE ENDS HERE ***********
+        mov             eax, 0
+        mov             esp, ebp
+        pop             ebp
+        ret

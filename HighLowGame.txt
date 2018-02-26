@@ -1,0 +1,64 @@
+; game that has you gues and tells you high or low (broken)
+
+%include "/usr/local/share/csc314/asm_io.inc"
+
+
+segment .data
+
+
+segment .bss
+
+
+segment .text
+        global  asm_main
+
+asm_main:
+        push    ebp
+        mov             ebp, esp
+        ; ********** CODE STARTS HERE **********
+
+        ; note that CH contains a random value
+
+        mov ebx, 0              ; u =0
+
+        top_of_loop:
+
+                call read_int
+                mov ebx, eax
+                call read_char
+
+
+                cmp bl, ch
+                jge second_test
+
+                        mov al, 'L'
+                        call print_char
+                        call print_nl
+
+                jmp end_else_if
+
+                second_test:
+                        cmp bl, ch
+                        je      end_else_if
+
+                        mov al, 'H'
+                        call print_char
+                        call print_nl
+
+        end_else_if:
+
+        cmp bl, ch
+        jne top_of_loop
+
+        end_of_loop:
+
+        mov al, '!'
+        call print_char
+        call print_nl
+
+
+        ; *********** CODE ENDS HERE ***********
+        mov             eax, 0
+        mov             esp, ebp
+        pop             ebp
+        ret

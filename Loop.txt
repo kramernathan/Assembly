@@ -1,0 +1,38 @@
+; loops and prints numbers from 1 to 10
+
+%include "/usr/local/share/csc314/asm_io.inc"
+
+
+segment .data
+
+
+segment .bss
+
+
+segment .text
+    global  asm_main
+
+asm_main:
+    push    ebp
+    mov     ebp, esp
+    ; ********** CODE STARTS HERE **********
+
+    mov ecx, 1
+
+    top_of_loop:
+
+        mov eax, ecx
+        call print_int
+        call print_nl
+
+        add ecx, 1
+
+    cmp ecx, 11
+    jl top_of_loop
+
+    ; *********** CODE ENDS HERE ***********
+    mov     eax, 0
+    mov     esp, ebp
+    pop     ebp
+    ret
+

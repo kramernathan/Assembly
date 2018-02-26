@@ -1,0 +1,59 @@
+; Prints Happy Thanksgiving
+
+%include "/usr/local/share/csc314/asm_io.inc"
+
+
+segment .data
+
+        pie             db      "Happy Thanksgiving",0
+        turkey  dd      1,3,5,7,9,0
+
+segment .bss
+
+        cranberries             resb    19
+        mashedpotatoes  resd    6
+
+segment .text
+        global  asm_main
+
+asm_main:
+        push    ebp
+        mov             ebp, esp
+        ; ********** CODE STARTS HERE **********
+
+        cld
+        mov     esi, pie
+        mov             edi, cranberries
+        mov             ecx, 19
+        rep             movsb
+
+        mov             eax, cranberries
+        call    print_string
+        call    print_nl
+
+;       cld
+;       mov             esi, turkey
+;       mov     edi, mashedpotatoes
+;       greenbeans:
+;               lodsd
+;               stosd
+;       cmp             eax, 0
+;       jne             greenbeans
+;
+;       mov             ecx, 0
+;       print_loop:
+;       cmp     ecx, 6
+;       jge             end_print_loop
+;               mov     eax, DWORD [mashedpotatoes + ecx * 4]
+;               call    print_int
+;               call    print_nl
+;       inc     ecx
+;       jmp print_loop
+;       end_print_loop:
+
+
+        ; *********** CODE ENDS HERE ***********
+        mov             eax, 0
+        mov             esp, ebp
+        pop             ebp
+        ret

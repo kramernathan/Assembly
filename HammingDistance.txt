@@ -1,0 +1,75 @@
+; determines hamming distance betweeen two strings
+
+%include "/usr/local/share/csc314/asm_io.inc"
+
+
+segment .data
+
+        format  db      "Hamming Distance = %d",10,0
+
+        ;the hamming distance between these is 1
+        str1    db      "test", 0
+        str2    db      "best", 0
+
+segment .bss
+
+segment .text
+        global  asm_main
+        extern printf
+
+asm_main:
+        push    ebp
+        mov     ebp, esp
+        ; ********** CODE STARTS HERE **********
+
+        push str2
+        push str1
+        call hamdist
+        add esp, 8
+
+
+        push eax
+        push format
+        call printf
+        add esp, 8
+
+        ; *********** CODE ENDS HERE ***********
+        mov             eax, 0
+        mov             esp, ebp
+        pop             ebp
+        ret
+
+
+hamdist:
+
+        push ebp
+        mov ebp, esp
+
+        sub esp, 8
+
+        mov ebx, DWORD [ebp + 8]
+        mov ecx, DWORD [ebp + 12]
+
+        mov DWORD [ebp - 4], 0
+        mov DWORD [ebp - 8], 0
+        check:
+        mov eax, DWORD [ebp - 8]
+
+        cmp     BYTE [ebx + eax], 0
+        je      end_check
+
+        mov     dl, BYTE [ebx+eax]
+        cmp     BYTE [ecx+eax], dl
+        je      match
+        inc     DWORD [ebp - 4]
+
+        match:
+        inc     DWORD [ebp - 8]
+        jmp     check
+        end_check:
+
+        mov eax, DWORD [ebp - 4]
+
+        mov esp, ebp
+        pop ebp
+                ret

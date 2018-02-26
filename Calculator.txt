@@ -1,0 +1,133 @@
+; calculator program, after every input press enter before next
+
+%include "/usr/local/share/csc314/asm_io.inc"
+
+
+segment .data
+
+
+segment .bss
+
+
+segment .text
+        global  asm_main
+
+asm_main:
+        push    ebp
+        mov             ebp, esp
+        ; ********** CODE STARTS HERE **********
+
+; reading in
+
+        call read_int   ; read int
+        mov ecx, eax    ; int in ecx
+        call read_char
+
+        call read_char  ; read operator (+,-,/,etc)
+        mov edi, eax    ; char in edi
+
+        call read_int   ; reads second int into eax
+        mov ebx, eax    ; int 2 in ebx
+
+        mov al, '='
+        call print_char
+        call print_nl
+
+; comparing input and jumping to appropriate place
+
+        cmp edi, '+'
+        je addition
+
+        cmp edi, '-'
+        je subtraction
+
+        cmp edi, '/'
+        je division
+
+        cmp edi, '*'
+        je multiply
+
+        cmp edi, '%'
+        je modulous
+
+        cmp edi, '^'
+        je exponent
+
+
+                addition:
+                        mov eax, ecx
+                        add eax, ebx
+                        call print_int
+                        call print_nl
+                        jmp end
+
+                subtraction:
+                        mov eax, ecx
+                        sub eax, ebx
+                        call print_int
+                        call print_nl
+                        jmp end
+
+                division:
+                        mov edx, 0
+                        mov eax, ecx
+                        idiv ebx
+                        call print_int
+                        call print_nl
+                        jmp end
+
+                multiply:
+                        mov edx, 0
+                        mov eax, ecx
+                        imul ebx
+                        call print_int
+                        call print_nl
+                        jmp end
+
+                modulous:
+                        mov edx, 0
+                        mov eax, ecx
+                        idiv ebx
+                        mov eax, edx
+                        call print_int
+                        call print_nl
+                        jmp end
+
+                exponent:
+                        mov eax, ecx
+                        mov esi, 1
+                        cmp ebx, 0
+                        je special
+
+
+                label:
+                        cmp esi, ebx
+                        jge exp_end
+
+                        mov eax, ecx
+                        mul eax
+                        inc esi
+                        jmp label
+
+
+                special:
+                        mov esi, 1
+                        mov eax, esi
+                        call print_int
+                        call print_nl
+                        jmp end
+
+                exp_end:
+                        call print_int
+                        call print_nl
+                        jmp end
+
+                end:
+
+
+
+        ; *********** CODE ENDS HERE ***********
+        mov             eax, 0
+        mov             esp, ebp
+        pop             ebp
+        ret
